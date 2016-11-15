@@ -1,0 +1,99 @@
+#! /bin/bash
+#
+# This script is public domain.
+#
+# gcin2pho
+
+  VERSION=0.0.1
+
+  OUTPUT_FILE=pho.tab.src
+
+  if [ "$1" = "" ]; then
+    echo ${0##*/}, version $VERSION
+    echo "Usage: ${0##*/} file"
+    exit 1
+  fi
+
+  if [ ! -f $1 ]; then
+    echo ${0##*/}: $1: No such file.
+    exit 2
+  fi
+
+  echo Generating $OUTPUT_FILE.
+
+  echo 1 ˙ > $OUTPUT_FILE
+  echo 2 ˊ >> $OUTPUT_FILE
+  echo 3 ˇ >> $OUTPUT_FILE
+  echo 4 ˋ >> $OUTPUT_FILE
+
+  csplit $1 ` cat -b $1    | \
+              grep chardef | \
+              grep -v \##  | \
+              head -n 1    | \
+              cut -f1      | \
+              tr -d ' '        ` > /dev/null
+
+  grep -v % xx01      | \
+  grep -v ˙          | \
+  grep -v ˊ          | \
+  grep -v ˇ          | \
+  grep -v ˋ          | \
+  grep -v linux       | \
+  tr A-Z a-z          | \
+  sed -e 's/1/ㄅ/g'     \
+      -e 's/q/ㄆ/g'     \
+      -e 's/a/ㄇ/g'     \
+      -e 's/z/ㄈ/g'     \
+      -e 's/2/ㄉ/g'     \
+      -e 's/w/ㄊ/g'     \
+      -e 's/s/ㄋ/g'     \
+      -e 's/x/ㄌ/g'     \
+      -e 's/e/ㄍ/g'     \
+      -e 's/d/ㄎ/g'     \
+      -e 's/c/ㄏ/g'     \
+      -e 's/r/ㄐ/g'     \
+      -e 's/f/ㄑ/g'     \
+      -e 's/v/ㄒ/g'     \
+      -e 's/5/ㄓ/g'     \
+      -e 's/t/ㄔ/g'     \
+      -e 's/g/ㄕ/g'     \
+      -e 's/b/ㄖ/g'     \
+      -e 's/y/ㄗ/g'     \
+      -e 's/h/ㄘ/g'     \
+      -e 's/n/ㄙ/g'     \
+      -e 's/u/ㄧ/g'     \
+      -e 's/j/ㄨ/g'     \
+      -e 's/m/ㄩ/g'     \
+      -e 's/8/ㄚ/g'     \
+      -e 's/i/ㄛ/g'     \
+      -e 's/k/ㄜ/g'     \
+      -e 's/,/ㄝ/g'     \
+      -e 's/9/ㄞ/g'     \
+      -e 's/o/ㄟ/g'     \
+      -e 's/l/ㄠ/g'     \
+      -e 's/\./ㄡ/g'    \
+      -e 's/0/ㄢ/g'     \
+      -e 's/p/ㄣ/g'     \
+      -e 's/;/ㄤ/g'     \
+      -e 's/\//ㄥ/g'    \
+      -e 's/-/ㄦ/g'     \
+      -e 's/6/2/g'      \
+      -e 's/7/1/g'      \
+      -e 's/	/ /g' | \
+  tr -s ' ' ' '       | \
+  perl -nle '(print,$hash{$_}=1) unless defined $hash{$_}' >> $OUTPUT_FILE
+
+  rm xx00 xx01
+
+  export GCIN_NO_RELOAD=
+
+  phoa2d $OUTPUT_FILE
+
+  PHOTABFILE=`basename $OUTPUT_FILE .src`
+
+  if [ -f $PHOTABFILE ]; then
+    echo Generating $PHOTABFILE. Done.
+  else
+    echo Failed to generate $PHOTABFILE.
+    exit 3
+  fi
