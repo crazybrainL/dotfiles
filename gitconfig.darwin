@@ -1,3 +1,36 @@
+#vim:set ft=gitconfig
 [user]
-	name = whlin
-	email = dds45612@gmail.com
+	name = yen3 
+	email = 
+[alias]
+    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+	st = status
+    edit-last-commit = !vim `git diff-tree -r --name-only HEAD HEAD~1`
+    edit-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; vim `f`"
+    add-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; git add `f`"
+	co = checkout
+	br = branch
+	ci = commit
+	subupdate = submodule foreach git pull origin master 
+[color]
+    diff = auto
+    status = auto
+    branch = auto
+[diff]
+	tool = Kaleidoscope
+[merge]
+	tool = Kaleidoscope
+[pager]
+    color = true
+[core]
+	editor = vim
+	excludesfile = /Users/yen3/.gitignore_global
+[mergetool "Kaleidoscope"]
+	cmd = ksdiff --merge --output \"$MERGED\" --base \"$BASE\" -- \"$LOCAL\" --snapshot \"$REMOTE\" --snapshot
+	trustexitcode = true
+[difftool "Kaleidoscope"]
+	cmd = ksdiff --partial-changeset --relative-path \"$MERGED\" -- \"$LOCAL\" \"$REMOTE\"
+[difftool]
+	prompt = false
+[mergetool]
+	prompt = false
