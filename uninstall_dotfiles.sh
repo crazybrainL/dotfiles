@@ -29,3 +29,5 @@ rm -rf $HOME/.tmux
 rm -rf $HOME/.vim
 rm -rf $HOME/.vimrc
 rm -rf $HOME/.gvimrc
+~/.fzf/uninstall
+rm -rf $HOME/.fzf
