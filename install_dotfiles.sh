@@ -8,17 +8,6 @@ git submodule init
 git submodule update --recursive
 ./script/git_submodule_update.sh
 
-# remove the previous files
-rm -rf $HOME/.zlogin      
-rm -rf $HOME/.zlogout     
-rm -rf $HOME/.zprezto     
-rm -rf $HOME/.zpreztorc   
-rm -rf $HOME/.zprofile    
-rm -rf $HOME/.zshenv      
-rm -rf $HOME/.zshrc       
-rm -rf $HOME/.zshsetting
-rm -rf $HOME/.personal_scripts
-
 # link all zsh files
 if [[ -d "$CURRENT_PATH/zsh" ]]; then
     ln -s $CURRENT_PATH/zsh                         $HOME/.zshsetting
@@ -33,10 +22,7 @@ if [[ -d "$CURRENT_PATH/zsh" ]]; then
 fi
 
 # add subversion config file
-if [[ ! -d "$HOME/.subversion" ]]; then
-    mkdir -p $HOME/.subversion
-    cp $CURRENT_PATH/svn_config $HOME/.subversion/config
-fi
+ln -s $CURRENT_PATH/subversion $HOME/.subversion
 
 # link script folder
 ln -s $CURRENT_PATH/script $HOME/.personal_scripts
@@ -44,32 +30,34 @@ ln -s $CURRENT_PATH/script $HOME/.personal_scripts
 # download vim plugins and install
 cd vim && ./install_vim.sh
 
+# install tmux plugin manager
+ln -s $CURRENT_PATH/tmux $HOME/.tmux
+
 if [[ "$OS_PLATFORM" == 'Linux' ]]; then
     echo "Copy linux dotfiles"
-    cp $CURRENT_PATH/gitconfig.linux    $HOME/.gitconfig
-    cp $CURRENT_PATH/tmux.conf          $HOME/.tmux.conf
-    cp $CURRENT_PATH/cgdbrc             $HOME/.cgdbrc
-    cp $CURRENT_PATH/htoprc             $HOME/.htoprc
-    cp $CURRENT_PATH/screenrc           $HOME/.screenrc
+    cp $CURRENT_PATH/gitconfig.linux       $CURRENT_PATH/gitconfig
+    ln -s $CURRENT_PATH/gitconfig           $HOME/.gitconfig
+    ln -s $CURRENT_PATH/cgdbrc              $HOME/.cgdbrc
+    ln -s $CURRENT_PATH/htoprc              $HOME/.htoprc
+    ln -s $CURRENT_PATH/screenrc            $HOME/.screenrc
 
     mkdir -p $HOME/.ssh
-    cp $CURRENT_PATH/sshrc              $HOME/.ssh/rc
+    ln -s $CURRENT_PATH/sshrc               $HOME/.ssh/rc
+
+    ln -s $HOME/.tmux/tmux.conf             $HOME/.tmux.conf
 
 elif [[ "$OS_PLATFORM" == 'Darwin' ]]; then
     echo "Copy Darwin dotfiles"
-    cp $CURRENT_PATH/gitconfig.darwin   $HOME/.gitconfig
-    cp $CURRENT_PATH/tmux.conf          $HOME/.tmux.conf
-    cp $CURRENT_PATH/cgdbrc             $HOME/.cgdbrc
-    cp $CURRENT_PATH/htoprc             $HOME/.htoprc
-    cp $CURRENT_PATH/screenrc           $HOME/.screenrc
+    cp $CURRENT_PATH/gitconfig.darwin       $CURRENT_PATH/gitconfig
+    ln -s $CURRENT_PATH/gitconfig           $HOME/.gitconfig
+    ln -s $CURRENT_PATH/cgdbrc              $HOME/.cgdbrc
+    ln -s $CURRENT_PATH/htoprc              $HOME/.htoprc
+    ln -s $CURRENT_PATH/screenrc            $HOME/.screenrc
 
     mkdir -p $HOME/.ssh
-    cp $CURRENT_PATH/sshrc              $HOME/.ssh/rc
-fi
+    ln -s $CURRENT_PATH/sshrc               $HOME/.ssh/rc
 
-# install tmux plugin manager
-if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
-    git clone https://github.com/tmux-plugins/tpm $HOME/.tmux/plugins/tpm
+    ln -s $HOME/.tmux/tmux.conf             $HOME/.tmux.conf
 fi
 
 # config git information
