@@ -50,7 +50,10 @@ cleanVimrc (){
     )
     tLen=${#FILES[@]}
 
-    ~/.fzf/uninstall
+    if [[ -e $HOME/.fzf  ]]; then
+        ~/.fzf/uninstall
+    fi
+
     for (( i=0; i<${tLen}; i++ ));
     do
       if [[ -e ${FILES[$i]} ]]; then
