@@ -1,0 +1,64 @@
+#
+# Global setting
+#
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+export ZSH_CUSTOM_SETTING_PATH=$HOME/.zshsetting/zshrc
+export PATH=$PATH:$HOME/.personal_scripts
+
+#
+# Load Prezto
+#
+if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
+  source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
+fi
+
+#
+# Custom setting
+#
+
+# Set viewer
+export EDITOR='vim'
+export VISUAL='vim'
+export PAGER='less'
+
+# Alias Setting
+alias grep='grep --color=auto'
+alias ack='ack --color-match=green'
+alias ag='ag --nogroup'
+alias more='less'
+
+# No more enter when autocomplete is finished.
+zmodload zsh/complist
+bindkey -M menuselect '^M' .accept-line
+
+# Don't show dots when searching completing option
+expand-or-complete-without-dots() {
+  zle expand-or-complete
+}
+zle -N expand-or-complete-without-dots
+bindkey "^I" expand-or-complete-without-dots
+
+# Use fzf as default search tools
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+export FZF_DEFAULT_OPTS="--no-mouse --reverse --exact"
+
+#
+# Environment-specific setting
+#
+
+# OS-specific setting
+UNAME=`uname`
+if [[ $UNAME == "Darwin" ]]
+then
+    source $ZSH_CUSTOM_SETTING_PATH/zshrc_darwin
+elif [[ $UNAME == "Linux" ]]
+then
+    source $ZSH_CUSTOM_SETTING_PATH/zshrc_linux
+fi
+
+# Source local-setting
+if [[ -f $HOME/.zshsetting_local/zshrc ]]
+then
+    source $HOME/.zshsetting_local/zshrc
+fi
