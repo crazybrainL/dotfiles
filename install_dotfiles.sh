@@ -41,7 +41,9 @@ if [[ "$OS_PLATFORM" == 'Linux' ]]; then
     ln -s $CURRENT_PATH/htoprc              $HOME/.htoprc
     ln -s $CURRENT_PATH/screenrc            $HOME/.screenrc
 
-    mkdir -p $HOME/.ssh
+    if [[ ! -d $HOME/.ssh ]]; then
+        mkdir -p $HOME/.ssh
+    fi
     ln -s $CURRENT_PATH/sshrc               $HOME/.ssh/rc
 
     ln -s $HOME/.tmux/tmux.conf             $HOME/.tmux.conf
@@ -54,7 +56,9 @@ elif [[ "$OS_PLATFORM" == 'Darwin' ]]; then
     ln -s $CURRENT_PATH/htoprc              $HOME/.htoprc
     ln -s $CURRENT_PATH/screenrc            $HOME/.screenrc
 
-    mkdir -p $HOME/.ssh
+    if [[ ! -d $HOME/.ssh ]]; then
+        mkdir -p $HOME/.ssh
+    fi
     ln -s $CURRENT_PATH/sshrc               $HOME/.ssh/rc
 
     ln -s $HOME/.tmux/tmux.conf             $HOME/.tmux.conf

@@ -74,7 +74,6 @@ cleanOther (){
         $HOME/.htoprc
         $HOME/.screenrc
         $HOME/.ssh/rc
-        $HOME/.ssh
         $HOME/.tmux
         $HOME/.personal_scripts
     )
