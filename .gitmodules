@@ -3,7 +3,9 @@
 	url = https://github.com/whlin/vimfilers
 [submodule "tmux/plugins/tpm"]
 	path = tmux/plugins/tpm
-	url = https://github.com/tmux-plugins/tpm
+    url = https://github.com/tmux-plugins/tpm
+    ignore = dirty
 [submodule "zsh/prezto"]
 	path = zsh/prezto
-	url = https://github.com/sorin-ionescu/prezto
+    url = https://github.com/sorin-ionescu/prezto
+    ignore = dirty

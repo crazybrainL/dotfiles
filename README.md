@@ -1,5 +1,11 @@
 # dotfiles
 
+## Pre-install
+
+* pyenv (python version >= 2.6)
+* git
+* zsh
+
 ## Install
 ```sh
 git clone --recursive https://github.com/whlin/dotfiles
