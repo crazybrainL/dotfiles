@@ -45,7 +45,6 @@ cleanVimrc (){
     FILES=(
         $HOME/.vim
         $HOME/.vimrc
-        $HOME/.gvimrc
         $HOME/.fzf
     )
     tLen=${#FILES[@]}
