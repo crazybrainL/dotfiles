@@ -18,7 +18,7 @@ if [[ -d "$CURRENT_PATH/zsh" ]]; then
     ln -s $HOME/.zshsetting/prezto/runcoms/zprofile $HOME/.zprofile    
     ln -s $HOME/.zshsetting/prezto/runcoms/zshenv   $HOME/.zshenv      
     ln -s $HOME/.zshsetting/zshrc/zshrc             $HOME/.zshrc       
-    ln -s $HOME/.zshsetting/zshrc/prezto/prompt_yen3_setup  $HOME/.zprezto/modules/prompt/functions/prompt_yen3_setup
+    ln -s $HOME/.zshsetting/zshrc/prezto/prompt_whlin_setup  $HOME/.zprezto/modules/prompt/functions/prompt_whlin_setup
 fi
 
 # add subversion config file
