@@ -39,10 +39,6 @@ expand-or-complete-without-dots() {
 zle -N expand-or-complete-without-dots
 bindkey "^I" expand-or-complete-without-dots
 
-# Use fzf as default search tools
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-export FZF_DEFAULT_OPTS="--no-mouse --reverse --exact"
-
 #
 # Environment-specific setting
 #
@@ -61,4 +57,28 @@ fi
 if [[ -f $HOME/.zshsetting_local/zshrc ]]
 then
     source $HOME/.zshsetting_local/zshrc
+fi
+
+# go-lang environment setting
+if [[ -d "/usr/local/go" ]]; then
+    #statements
+    export PATH="/usr/local/go/bin:$PATH"
+    export GOPATH="/usr/local/go"
+fi
+
+# pyenv environment setting
+if [[ -d $HOME/.pyenv ]]; then
+    #statements
+    export PATH="$HOME/.pyenv/bin:$PATH"
+    # it will add $HOME/.pyenv/shims to $PATH
+    eval "$(pyenv init -)"
+    # it will add $HOME/.pyenv/plugins/pyenv-virtualenv/shims to $PATH
+    eval "$(pyenv virtualenv-init -)"
+    export PYTHON_CONFIGURE_OPTS="--enable-framework"
+fi
+
+# Use fzf as default search tools
+if [[ -d $HOME/.fzf ]]; then
+    [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+    export FZF_DEFAULT_OPTS="--no-mouse --reverse --exact"
 fi
