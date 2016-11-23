@@ -27,9 +27,6 @@ ln -s $CURRENT_PATH/subversion $HOME/.subversion
 # link script folder
 ln -s $CURRENT_PATH/script $HOME/.personal_scripts
 
-# download vim plugins and install
-cd vim && ./install_vim.sh
-
 # install tmux plugin manager
 ln -s $CURRENT_PATH/tmux $HOME/.tmux
 
@@ -67,3 +64,6 @@ fi
 # config git information
 git config --global user.name "whlin"
 git config --global user.email "dds45612@gmail.com"
+
+# download vim plugins and install
+cd vim && ./install_vim.sh
