@@ -66,11 +66,13 @@ function prompt_whlin_setup {
   zstyle ':vcs_info:*+set-message:*' hooks set_vcs_prompt_symbol
 
   # Define prompts.
-  PROMPT='%(?..%F{red}%B-> [%?]%b%f
+  PROMPT='
+%(?..%F{red}%B-> [%?]%b%f
 )%F{red}${_prompt_whlin_pwd}%f [%n@%m] [%T] ${vcs_info_msg_0_}
 ${_prompt_whlin_symbol} '
   RPROMPT='${editor_info[keymap]}'
   SPROMPT='zsh: correct %F{magenta}%R%f to %F{green}%r%f [nyae]? '
+
 }
 
 prompt_whlin_setup "$@"
