@@ -24,4 +24,4 @@
     color = true
 [core]
 	editor = vim
-	excludesfile = /Users/yen3/.gitignore_global
+	excludesfile = /Users/whlin/.gitignore_global

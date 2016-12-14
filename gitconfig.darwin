@@ -24,7 +24,7 @@
     color = true
 [core]
 	editor = vim
-	excludesfile = /Users/yen3/.gitignore_global
+	excludesfile = /Users/whlin/.gitignore_global
 [mergetool "Kaleidoscope"]
 	cmd = ksdiff --merge --output \"$MERGED\" --base \"$BASE\" -- \"$LOCAL\" --snapshot \"$REMOTE\" --snapshot
 	trustexitcode = true
