@@ -6,6 +6,6 @@
 	path = zsh/prezto
     url = https://github.com/sorin-ionescu/prezto
     ignore = dirty
-[submodule "vimfilers"]
-	path = vimfilers
+[submodule "vim"]
+	path = vim
 	url = https://github.com/crazybrainL/vimfilers
