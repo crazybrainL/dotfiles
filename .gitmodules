@@ -1,6 +1,3 @@
-[submodule "vim"]
-	path = vim
-	url = https://github.com/whlin/vimfilers
 [submodule "tmux/plugins/tpm"]
 	path = tmux/plugins/tpm
     url = https://github.com/tmux-plugins/tpm
@@ -9,3 +6,6 @@
 	path = zsh/prezto
     url = https://github.com/sorin-ionescu/prezto
     ignore = dirty
+[submodule "vimfilers"]
+	path = vimfilers
+	url = https://github.com/crazybrainL/vimfilers
