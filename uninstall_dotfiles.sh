@@ -12,6 +12,7 @@ usage: $0 [OPTIONS]
         ./uninstall_dotfiles.sh -c zsh
         ./uninstall_dotfiles.sh -c vim
         ./uninstall_dotfiles.sh -c other
+        ./uninstall_dotfiles.sh -c all
 EOF
 }
 
@@ -89,10 +90,13 @@ cleanOther (){
     done
 }
 
-while getopts c: opt
+while getopts c:h opt
 do
     case $opt in
-        c) CLEANRC=$OPTARG;;
+        c)  CLEANRC=$OPTARG;;
+        h)  help
+            exit 0
+            ;;
         \?) echo "Invalid option -$OPTARG" >&2;;
     esac
 done
@@ -105,7 +109,7 @@ elif [ "$CLEANRC" == vim ]; then
     cleanVimrc
 elif [ "$CLEANRC" == other ]; then
     cleanOther
-else
+elif [ "$CLEANRC" == all ]; then
     cleanZshrc
     cleanVimrc
     cleanOther

@@ -7,6 +7,7 @@ OS_PLATFORM=`uname`
 git submodule init
 git submodule update --recursive
 ./script/git_submodule_update.sh
+./uninstall_dotfiles.sh
 
 # link all zsh files
 if [[ -d "$CURRENT_PATH/zsh" ]]; then
