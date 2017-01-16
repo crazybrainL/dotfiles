@@ -186,9 +186,9 @@ function prompt_whlin_setup {
   # ---- end ----------------------
 
   # Define prompts.
-  PROMPT="
-[${_prompt_mseri_colors[3]}%n%f@${_prompt_mseri_colors[2]}%m%f] ${_prompt_mseri_colors[5]}%~%f"'${vcs_info_msg_0_}'"
-» "
+  PROMPT='
+[${_prompt_mseri_colors[3]}%n%f@${_prompt_mseri_colors[2]}%m%f] ${_prompt_mseri_colors[5]}${_prompt_whlin_pwd}%f'"${vcs_info_msg_0_}"'
+» '
   RPROMPT=''
 
 }
