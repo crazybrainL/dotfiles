@@ -14,8 +14,25 @@
 #   http://i.imgur.com/rCo3S.png
 #
 
+function +vi-set_novcs_prompt_symbol {
+  _prompt_whlin_symbol='$'
+}
+
+function +vi-set_vcs_prompt_symbol {
+  _prompt_whlin_symbol='$'
+}
+
+function +vi-git_precmd {
+  # Check for untracked files, since vcs_info does not.
+  if [[ -n $(git ls-files --other --exclude-standard 2> /dev/null) ]]; then
+    hook_com[unstaged]+='%F{green}?%f'
+  fi
+}
+
 function prompt_whlin_precmd {
+  _prompt_whlin_pwd="${PWD/#$HOME/~}"
   git-info
+  vcs_info
 }
 
 function prompt_whlin_setup {
@@ -24,6 +41,7 @@ function prompt_whlin_setup {
   prompt_opts=(cr percent subst)
 
   # Load required functions.
+  autoload -Uz vcs_info
   autoload -Uz add-zsh-hook
 
   # Add hook for calling git-info before each command.
@@ -48,24 +66,48 @@ function prompt_whlin_setup {
     )
   fi
 
-  # Set git-info parameters.
-  zstyle ':prezto:module:git:info' verbose 'yes'
-  zstyle ':prezto:module:git:info:ahead' format ' %%B%F{yellow}⬆ %f%%b'
-  zstyle ':prezto:module:git:info:behind' format ' %%B%F{yellow}⬇ %f%%b'
-  zstyle ':prezto:module:git:info:branch' format '%F{green}%b%f'
-  zstyle ':prezto:module:git:info:stashed' format ' %%B%F{cyan}✭ %f%%b'
+  ## Set git-info parameters.-----
+  #zstyle ':prezto:module:git:info' verbose 'yes'
+  #zstyle ':prezto:module:git:info:ahead' format ' %%B%F{yellow}⬆ %f%%b'
+  #zstyle ':prezto:module:git:info:behind' format ' %%B%F{yellow}⬇ %f%%b'
+  #zstyle ':prezto:module:git:info:branch' format '%F{green}%b%f'
+  #zstyle ':prezto:module:git:info:stashed' format ' %%B%F{cyan}✭ %f%%b'
 
-  zstyle ':prezto:module:git:info:clean' format ' %F{green}✔ %f'
-  zstyle ':prezto:module:git:info:dirty' format ' %F{red}✗%f'
-  zstyle ':prezto:module:git:info:untracked' format ' %%B%F{white}◼ %f%%b'
+  #zstyle ':prezto:module:git:info:clean' format ' %F{green}✔ %f'
+  #zstyle ':prezto:module:git:info:dirty' format ' %F{red}✗%f'
+  #zstyle ':prezto:module:git:info:untracked' format ' %%B%F{white}◼ %f%%b'
 
-  zstyle ':prezto:module:git:info:keys' format \
-      'prompt' ' %F{green}(%f$(coalesce "%b" "%p" "%c")${git_info[rprompt]}%s%F{green})%f' \
-      'rprompt' '%A%B%S%C%D%U%u'
+  #zstyle ':prezto:module:git:info:keys' format \
+      #'prompt' ' %F{green}(%f$(coalesce "%b" "%p" "%c")${git_info[rprompt]}%s%F{green})%f' \
+      #'rprompt' '%A%B%S%C%D%U%u'
+  ## ---- end ----------------------
+
+  # ---- vcs_info -----------------
+  # Set editor-info parameters.
+  zstyle ':prezto:module:editor:info:completing' format '%F{green}...%f'
+  zstyle ':prezto:module:editor:info:keymap:alternate' format '%F{yellow}--- COMMAND ---%f'
+
+  # Set vcs_info parameters.
+  zstyle ':vcs_info:*' check-for-changes true
+  zstyle ':vcs_info:*' formats ' on %F{magenta}%b%f%c%u'
+  zstyle ':vcs_info:*' actionformats ' on %F{magenta}%b%f%c%u %F{yellow}(%a)%f'
+
+  zstyle ':vcs_info:*' cleanstr ' %F{green}✔ %f'
+  zstyle ':vcs_info:*' stagedstr ' %F{red}✗%f'
+  zstyle ':vcs_info:*' unstagedstr ' %F{white}◼ %f'
+
+  # Set vcs_info hooks.
+  # NOTE: Prior to Zsh v4.3.12, there are no static hooks, no vcs_info_hookadd
+  #       function, and no 'no-vcs' hook.
+  zstyle ':vcs_info:*+start-up:*' hooks set_novcs_prompt_symbol
+  zstyle ':vcs_info:git*+set-message:*' hooks set_vcs_prompt_symbol git_precmd
+  zstyle ':vcs_info:*+set-message:*' hooks set_vcs_prompt_symbol
+  # ---- end ----------------------
 
   # Define prompts.
+#[${_prompt_mseri_colors[3]}%n%f@${_prompt_mseri_colors[2]}%m%f] ${_prompt_mseri_colors[5]}%~%f"'${(e)git_info[prompt]}'"
   PROMPT="
-[${_prompt_mseri_colors[3]}%n%f@${_prompt_mseri_colors[2]}%m%f] ${_prompt_mseri_colors[5]}%~%f"'${(e)git_info[prompt]}'" 
+[${_prompt_mseri_colors[3]}%n%f@${_prompt_mseri_colors[2]}%m%f] ${_prompt_mseri_colors[5]}%~%f"'${vcs_info_msg_0_}'"
 » "
   RPROMPT=''
 
