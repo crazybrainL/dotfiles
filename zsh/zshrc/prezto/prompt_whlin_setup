@@ -45,6 +45,7 @@ function +vi-git-clean {
             untracked_files=$(cd "$1" > /dev/null && command git ls-files --others --exclude-standard)
         fi
         stash_list=$(command git stash list)
+
         # Count staged and conflicts files.
         if [ -n "$staged_files" ];then
             conflicts=$(echo "$staged_files" | sed '/^[^U]/d' | wc -l | tr -d ' ')
