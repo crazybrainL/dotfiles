@@ -25,7 +25,7 @@ function +vi-set_vcs_prompt_symbol {
 function +vi-git-untracked {
   # Check for untracked files, since vcs_info does not.
   if [[ -n $(git ls-files --other --exclude-standard 2> /dev/null) ]]; then
-    hook_com[unstaged]+='%F{white}● %f'
+    hook_com[unstaged]+='%F{white}?%f'
   fi
 }
 
@@ -114,11 +114,11 @@ function prompt_whlin_setup {
 
   # Set vcs_info parameters.
   zstyle ':vcs_info:*' check-for-changes true
-  zstyle ':vcs_info:*' formats ' on %F{magenta}%b%f| %c%u'
+  zstyle ':vcs_info:*' formats ' on %F{magenta}%b%f %c%u'
   zstyle ':vcs_info:*' actionformats ' on %F{magenta}%b%f%c%u %F{yellow}(%a)%f'
 
-  zstyle ':vcs_info:*' stagedstr '%F{green}✚ %f'
-  zstyle ':vcs_info:*' unstagedstr '%F{red}✖ %f'
+  zstyle ':vcs_info:*' stagedstr '%F{green}+%f'
+  zstyle ':vcs_info:*' unstagedstr '%F{red}!%f'
 
   # Set vcs_info hooks.
   # NOTE: Prior to Zsh v4.3.12, there are no static hooks, no vcs_info_hookadd
