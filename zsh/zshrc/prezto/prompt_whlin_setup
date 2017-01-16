@@ -22,16 +22,66 @@ function +vi-set_vcs_prompt_symbol {
   _prompt_whlin_symbol='$'
 }
 
+function +vi-git-clean {
+    # Check for clean.
+    local staged=0
+    local conflicts=0
+    local unstaged=0
+    local untracked=0
+
+    local is_inside_work_tree
+
+    if [ "$(command git rev-parse --is-inside-work-tree 2> /dev/null)" = 'true' ]; then
+        is_inside_work_tree='true'
+        staged_files=$(command git diff --staged --name-status)
+        if [ $? -ne 0 ]; then
+            # Error occurs on old version git.
+            staged_files=$(command git status --short --porcelain | command grep '^[UMADRC]')
+        fi
+        unstaged_files=$(command git diff --name-status)
+        untracked_files=$(command git ls-files --others --exclude-standard "$(command git rev-parse --show-toplevel)")
+        if [ $? -ne 0 ]; then
+            # Error occurs on old version git.
+            untracked_files=$(cd "$1" > /dev/null && command git ls-files --others --exclude-standard)
+        fi
+        stash_list=$(command git stash list)
+        # Count staged and conflicts files.
+        if [ -n "$staged_files" ];then
+            conflicts=$(echo "$staged_files" | sed '/^[^U]/d' | wc -l | tr -d ' ')
+
+            staged=$(echo "$staged_files" | wc -l | tr -d ' ')
+            staged=$(($staged - $conflicts))
+        fi
+
+        # Count unstaged files.
+        if [ -n "$unstaged_files" ]; then
+            unstaged=$(echo "$unstaged_files" | sed '/^U/d' | wc -l | tr -d ' ')
+        fi
+
+        # Count untracked files.
+        if [ -n "$untracked_files" ]; then
+            untracked=$(echo "$untracked_files" | wc -l | tr -d ' ')
+        fi
+
+        if [ "$is_inside_work_tree" = 'true' ]; then
+            if (($staged + $unstaged + $untracked + $conflicts == 0)); then
+                hook_com[unstaged]+=' %F{green}✔%f'
+            fi
+        fi
+    fi
+}
+
 function +vi-git-untracked {
   # Check for untracked files, since vcs_info does not.
-  if [[ -n $(git ls-files --other --exclude-standard 2> /dev/null) ]]; then
-    hook_com[unstaged]+='%F{white}?%f'
-  fi
+    if [[ -n $(git ls-files --other --exclude-standard 2> /dev/null) ]]; then
+        #hook_com[unstaged]+='%F{white}● %f'
+        hook_com[unstaged]+='%F{white}?%f'
+    fi
 }
 
 ### Compare local changes to remote changes
 function +vi-git-st {
-local ahead behind remote
+    local ahead behind remote
     local -a gitstatus
 
     # Are we on a remote-tracking branch?
@@ -114,9 +164,12 @@ function prompt_whlin_setup {
 
   # Set vcs_info parameters.
   zstyle ':vcs_info:*' check-for-changes true
-  zstyle ':vcs_info:*' formats ' on %F{magenta}%b%f %c%u'
+  #zstyle ':vcs_info:*' formats ' on %F{magenta}%b%f| %c%u'
+  zstyle ':vcs_info:*' formats ' on %F{magenta}%b%f%c%u'
   zstyle ':vcs_info:*' actionformats ' on %F{magenta}%b%f%c%u %F{yellow}(%a)%f'
 
+  #zstyle ':vcs_info:*' stagedstr '%F{green}✚ %f'
+  #zstyle ':vcs_info:*' unstagedstr '%F{red}✖ %f'
   zstyle ':vcs_info:*' stagedstr '%F{green}+%f'
   zstyle ':vcs_info:*' unstagedstr '%F{red}!%f'
 
@@ -125,6 +178,7 @@ function prompt_whlin_setup {
   #       function, and no 'no-vcs' hook.
   zstyle ':vcs_info:*+start-up:*' hooks set_novcs_prompt_symbol
   zstyle ':vcs_info:git*+set-message:*' hooks set_vcs_prompt_symbol \
+                                                git-clean \
                                                 git-untracked \
                                                 git-st
   zstyle ':vcs_info:*+set-message:*' hooks set_vcs_prompt_symbol
