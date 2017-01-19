@@ -167,8 +167,8 @@ function prompt_whlin_setup {
   # Set vcs_info parameters.
   zstyle ':vcs_info:*' check-for-changes true
   #zstyle ':vcs_info:*' formats ' on %F{magenta}%b%f| %c%u'
-  zstyle ':vcs_info:*' formats ' on %F{magenta}%b%f%c%u'
-  zstyle ':vcs_info:*' actionformats ' on %F{magenta}%b%f%c%u %F{yellow}(%a)%f'
+  zstyle ':vcs_info:*' formats 'on %F{magenta}%b%f%c%u'
+  zstyle ':vcs_info:*' actionformats 'on %F{magenta}%b%f%c%u %F{yellow}(%a)%f'
 
   #zstyle ':vcs_info:*' stagedstr '%F{green}✚ %f'
   #zstyle ':vcs_info:*' unstagedstr '%F{red}✖ %f'
@@ -187,8 +187,19 @@ function prompt_whlin_setup {
   # ----- end -----
 
   # Define prompts.
+  # Note:
+  #     %T: show time.
+  #     %n: show user name.
+  #     %m: show hostname.
+  #     ${vcs_info_msg_0_} = 'on %F{magenta}%b%f%c%u' (':vcs_info:*' formats)
+  #         it show git info.
+  #     ${_prompt_whlin_pwd} = "${PWD/#$HOME/~}"
+  #         it show path info
+  #
   PROMPT='
-[${_prompt_mseri_colors[3]}%n%f@${_prompt_mseri_colors[2]}%m%f] ${_prompt_mseri_colors[5]}${_prompt_whlin_pwd}%f${vcs_info_msg_0_}
+[${_prompt_mseri_colors[3]}%n%f@${_prompt_mseri_colors[2]}%m%f] \
+${_prompt_mseri_colors[5]}${_prompt_whlin_pwd}%f \
+${vcs_info_msg_0_}
 » '
   RPROMPT=''
 
