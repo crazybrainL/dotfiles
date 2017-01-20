@@ -1,0 +1,194 @@
+#
+# A colorful, friendly, multiline theme with some handy features.
+#
+# Authors:
+#   Paul Gideon Dann <pdgiddie@gmail.com>
+#   Sorin Ionescu <sorin.ionescu@gmail.com>
+#
+# Features:
+#   - Simple VCS branch, staged, and unstaged indication.
+#   - Prompt character is different in a VCS repository.
+#   - Last command exit status is displayed when non-zero.
+#
+# Screenshots:
+#   http://i.imgur.com/rCo3S.png
+#
+
+function +vi-set_novcs_prompt_symbol {
+  _prompt_whlin_symbol='$'
+}
+
+function +vi-set_vcs_prompt_symbol {
+  _prompt_whlin_symbol='$'
+}
+
+function +vi-git-clean {
+    # Check for clean.
+    local staged=0
+    local conflicts=0
+    local unstaged=0
+    local untracked=0
+
+    local is_inside_work_tree
+
+    if [ "$(command git rev-parse --is-inside-work-tree 2> /dev/null)" = 'true' ]; then
+        is_inside_work_tree='true'
+        staged_files=$(command git diff --staged --name-status)
+        if [ $? -ne 0 ]; then
+            # Error occurs on old version git.
+            staged_files=$(command git status --short --porcelain | command grep '^[UMADRC]')
+        fi
+        unstaged_files=$(command git diff --name-status)
+        untracked_files=$(command git ls-files --others --exclude-standard "$(command git rev-parse --show-toplevel)")
+        if [ $? -ne 0 ]; then
+            # Error occurs on old version git.
+            untracked_files=$(cd "$1" > /dev/null && command git ls-files --others --exclude-standard)
+        fi
+        stash_list=$(command git stash list)
+
+        # Count staged and conflicts files.
+        if [ -n "$staged_files" ];then
+            conflicts=$(echo "$staged_files" | sed '/^[^U]/d' | wc -l | tr -d ' ')
+
+            staged=$(echo "$staged_files" | wc -l | tr -d ' ')
+            staged=$(($staged - $conflicts))
+        fi
+
+        # Count unstaged files.
+        if [ -n "$unstaged_files" ]; then
+            unstaged=$(echo "$unstaged_files" | sed '/^U/d' | wc -l | tr -d ' ')
+        fi
+
+        # Count untracked files.
+        if [ -n "$untracked_files" ]; then
+            untracked=$(echo "$untracked_files" | wc -l | tr -d ' ')
+        fi
+
+        if [ "$is_inside_work_tree" = 'true' ]; then
+            if (($staged + $unstaged + $untracked + $conflicts == 0)); then
+                hook_com[unstaged]+='%F{green}●%f'
+            fi
+        fi
+    fi
+}
+
+function +vi-git-untracked {
+  # Check for untracked files, since vcs_info does not.
+    if [[ -n $(git ls-files --other --exclude-standard 2> /dev/null) ]]; then
+        #hook_com[unstaged]+='%F{white}● %f'
+        hook_com[unstaged]+='%F{white}?%f'
+    fi
+}
+
+### Compare local changes to remote changes
+function +vi-git-st {
+    local ahead behind remote
+    local -a gitstatus
+
+    # Are we on a remote-tracking branch?
+    remote=${$(git rev-parse --verify ${hook_com[branch]}@{upstream} \
+        --symbolic-full-name 2>/dev/null)/refs\/remotes\/}
+
+    if [[ -n ${remote} ]] ; then
+        # for git prior to 1.7
+        # ahead=$(git rev-list origin/${hook_com[branch]}..HEAD | wc -l)
+        ahead=$(git rev-list ${hook_com[branch]}@{upstream}..HEAD 2>/dev/null | wc -l)
+        (( $ahead )) && gitstatus+=( "%B%F{yellow}⬆ %f%b" )
+
+        # for git prior to 1.7
+        # behind=$(git rev-list HEAD..origin/${hook_com[branch]} | wc -l)
+        behind=$(git rev-list HEAD..${hook_com[branch]}@{upstream} 2>/dev/null | wc -l)
+        (( $behind )) && gitstatus+=( "%B%F{yellow}⬇ %f%b" )
+
+        #hook_com[unstaged]+="${gitstatus}"
+        hook_com[branch]+="${gitstatus}"
+    fi
+}
+
+
+function prompt_whlin_precmd {
+  _prompt_whlin_pwd="${PWD/#$HOME/~}"
+  vcs_info
+}
+
+function prompt_whlin_setup {
+  setopt LOCAL_OPTIONS
+  unsetopt XTRACE KSH_ARRAYS
+  prompt_opts=(cr percent subst)
+
+  # Load required functions.
+  autoload -Uz vcs_info
+  autoload -Uz add-zsh-hook
+
+  # Add hook for calling git-info before each command.
+  add-zsh-hook precmd prompt_whlin_precmd
+
+  # Use extended color pallete if available.
+  if [[ $TERM = *256color* || $TERM = *rxvt* ]]; then
+    _prompt_mseri_colors=(
+      "%F{81}"  # Turquoise
+      "%F{75}"  # Pastel Cyan
+      "%F{215}" # Light Orange
+      "%F{166}" # Orange - not used
+      "%F{119}" # Pastel Limegreen
+      "%F{135}" # Purple
+      "%F{161}" # Hotpink
+      "%F{118}" # Limegreen
+    )
+  else
+    _prompt_mseri_colors=(
+      "%F{cyan}"
+      "%F{magenta}"
+      "%F{yellow}"
+      "%F{red}"
+      "%F{green}"
+    )
+  fi
+
+  # ----- vcs_info -----
+  # Set editor-info parameters.
+  zstyle ':prezto:module:editor:info:completing' format "%F{green}...%f"
+  zstyle ':prezto:module:editor:info:keymap:alternate' format "%F{yellow}--- COMMAND ---%f"
+
+  # Set vcs_info parameters.
+  zstyle ':vcs_info:*' check-for-changes true
+  #zstyle ':vcs_info:*' formats "%F{magenta}%b%f| %c%u"
+  zstyle ':vcs_info:*' formats "${_prompt_mseri_colors[1]}%b%f%c%u"
+  zstyle ':vcs_info:*' actionformats "${_prompt_mseri_colors[1]}%b%f%c%u %F{yellow}(%a)%f"
+
+  #zstyle ':vcs_info:*' stagedstr '%F{green}✚ %f'
+  #zstyle ':vcs_info:*' unstagedstr '%F{red}✖ %f'
+  zstyle ':vcs_info:*' stagedstr "%F{green}+%f"
+  zstyle ':vcs_info:*' unstagedstr "%F{red}!%f"
+
+  # Set vcs_info hooks.
+  # NOTE: Prior to Zsh v4.3.12, there are no static hooks, no vcs_info_hookadd
+  #       function, and no 'no-vcs' hook.
+  zstyle ':vcs_info:*+start-up:*' hooks set_novcs_prompt_symbol
+  zstyle ':vcs_info:git*+set-message:*' hooks set_vcs_prompt_symbol \
+                                                git-clean \
+                                                git-untracked \
+                                                git-st
+  zstyle ':vcs_info:*+set-message:*' hooks set_vcs_prompt_symbol
+  # ----- end -----
+
+  # Define prompts.
+  # Note:
+  #     %T: show time.
+  #     %n: show user name.
+  #     %m: show hostname.
+  #     ${vcs_info_msg_0_} = 'on %F{magenta}%b%f%c%u' (':vcs_info:*' formats)
+  #         it show git info.
+  #     ${_prompt_whlin_pwd} = "${PWD/#$HOME/~}"
+  #         it show path info
+  #
+  PROMPT='
+[${_prompt_mseri_colors[2]}%n%f\
+@\
+${_prompt_mseri_colors[6]}%m%f]\
+${_prompt_mseri_colors[5]}${_prompt_whlin_pwd}%f
+» '
+  RPROMPT='${vcs_info_msg_0_}'
+}
+
+prompt_whlin_setup "$@"
