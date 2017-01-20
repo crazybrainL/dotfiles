@@ -62,16 +62,17 @@ function prompt_whlin_setup {
   # Set git-info parameters.
   zstyle ':prezto:module:git:info' verbose 'yes'
   zstyle ':prezto:module:git:info:action' format ' +%s'
-  zstyle ':prezto:module:git:info:ahead' format ' %%B%F{yellow}⬆ %f%%b'
-  zstyle ':prezto:module:git:info:behind' format ' %%B%F{yellow}⬇ %f%%b'
-  zstyle ':prezto:module:git:info:commit' format ' %F{white}%.7c%f'
-  zstyle ':prezto:module:git:info:branch' format '%F${81}%b%f'
-  zstyle ':prezto:module:git:info:stashed' format ' %%B%F{cyan}✭ %f%%b'
-  zstyle ':prezto:module:git:info:modified' format ' %F{red}!%f'
-  zstyle ':prezto:module:git:info:clean' format ' %F{green}✔ %f'
-  zstyle ':prezto:module:git:info:untracked' format ' %%B%F{white}?%f%%b'
+  zstyle ':prezto:module:git:info:ahead' format '%%B%F{yellow}⬆ %f%%b'
+  zstyle ':prezto:module:git:info:behind' format '%%B%F{yellow}⬇ %f%%b'
+  zstyle ':prezto:module:git:info:commit' format '%F{white}%.7c%f'
+  zstyle ':prezto:module:git:info:branch' format '%F{81}%b%f|'
+  zstyle ':prezto:module:git:info:stashed' format '%%B%F{cyan}✭ %f%%b'
+  zstyle ':prezto:module:git:info:modified' format '%F{red}!%f'
+  zstyle ':prezto:module:git:info:clean' format '%F{green}✔ %f'
+  zstyle ':prezto:module:git:info:untracked' format '%%B%F{white}?%f%%b'
 
-  zstyle ':prezto:module:git:info:keys' format 'rprompt' '%b%p%c%s%D%C%d%a%m%u'
+  zstyle ':prezto:module:git:info:keys' format \
+        'rprompt' '%b%c %s%D%C%d%a%m%u'
   #zstyle ':prezto:module:git:info:keys' format 'rprompt' '%b%c%s%D'
   #zstyle ':prezto:module:git:info:keys' format \
       #'prompt' ' %F{green}(%f$(coalesce "%b" "%p" "%c")${git_info[rprompt]}%s%F{green})%f' \
@@ -92,7 +93,7 @@ function prompt_whlin_setup {
 [${_prompt_mseri_colors[3]}%n%f@${_prompt_mseri_colors[2]}%m%f] \
 ${_prompt_mseri_colors[5]}${_prompt_whlin_pwd}%f
 » '
-  RPROMPT='${git_info[rprompt]}'
+  RPROMPT='(${git_info[rprompt]})'
 
 }
 
