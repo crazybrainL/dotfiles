@@ -1,1 +1,148 @@
-prompt_whlin_setup_gitwithvcs
+#
+# A colorful, friendly, multiline theme with some handy features.
+#
+# Authors:
+#   Paul Gideon Dann <pdgiddie@gmail.com>
+#   Sorin Ionescu <sorin.ionescu@gmail.com>
+#
+# Features:
+#   - Simple VCS branch, staged, and unstaged indication.
+#   - Prompt character is different in a VCS repository.
+#   - Last command exit status is displayed when non-zero.
+#
+# Screenshots:
+#   http://i.imgur.com/rCo3S.png
+#
+
+function +vi-git-clean {
+    # Check for clean.
+    local staged=0
+    local conflicts=0
+    local unstaged=0
+    local untracked=0
+
+    local is_inside_work_tree
+
+    if [ "$(command git rev-parse --is-inside-work-tree 2> /dev/null)" = 'true' ]; then
+        is_inside_work_tree='true'
+        staged_files=$(command git diff --staged --name-status)
+        if [ $? -ne 0 ]; then
+            # Error occurs on old version git.
+            staged_files=$(command git status --short --porcelain | command grep '^[UMADRC]')
+        fi
+        unstaged_files=$(command git diff --name-status)
+        untracked_files=$(command git ls-files --others --exclude-standard "$(command git rev-parse --show-toplevel)")
+        if [ $? -ne 0 ]; then
+            # Error occurs on old version git.
+            untracked_files=$(cd "$1" > /dev/null && command git ls-files --others --exclude-standard)
+        fi
+        stash_list=$(command git stash list)
+
+        # Count staged and conflicts files.
+        if [ -n "$staged_files" ];then
+            conflicts=$(echo "$staged_files" | sed '/^[^U]/d' | wc -l | tr -d ' ')
+
+            staged=$(echo "$staged_files" | wc -l | tr -d ' ')
+            staged=$(($staged - $conflicts))
+        fi
+
+        # Count unstaged files.
+        if [ -n "$unstaged_files" ]; then
+            unstaged=$(echo "$unstaged_files" | sed '/^U/d' | wc -l | tr -d ' ')
+        fi
+
+        # Count untracked files.
+        if [ -n "$untracked_files" ]; then
+            untracked=$(echo "$untracked_files" | wc -l | tr -d ' ')
+        fi
+
+        if [ "$is_inside_work_tree" = 'true' ]; then
+            if (($staged + $unstaged + $untracked + $conflicts == 0)); then
+                hook_com[unstaged]+='%F{green}●%f'
+            fi
+        fi
+    fi
+}
+
+function prompt_whlin_precmd {
+  _prompt_whlin_pwd="${PWD/#$HOME/~}"
+  git-info
+  vcs_info
+}
+
+function prompt_whlin_setup {
+  setopt LOCAL_OPTIONS
+  unsetopt XTRACE KSH_ARRAYS
+  prompt_opts=(cr percent subst)
+
+  # Load required functions.
+  autoload -Uz add-zsh-hook
+  autoload -Uz vcs_info
+
+  # Add hook for calling git-info before each command.
+  add-zsh-hook precmd prompt_whlin_precmd
+
+  # Use extended color pallete if available.
+  if [[ $TERM = *256color* || $TERM = *rxvt* ]]; then
+    _prompt_mseri_colors=(
+      "%F{81}"  # Turquoise
+      "%F{75}"  # Pastel Cyan
+      "%F{215}" # Light Orange
+      "%F{166}" # Orange - not used
+      "%F{119}" # Pastel Limegreen
+      "%F{135}" # Purple
+      "%F{161}" # Hotpink
+      "%F{118}" # Limegreen
+    )
+  else
+    _prompt_mseri_colors=(
+      "%F{cyan}"
+      "%F{magenta}"
+      "%F{yellow}"
+      "%F{red}"
+      "%F{green}"
+    )
+  fi
+
+  # Set editor-info parameters.
+  zstyle ':prezto:module:editor:info:completing' format '%F{green}...%f'
+  zstyle ':prezto:module:editor:info:keymap:alternate' format '%F{yellow}--- COMMAND ---%f'
+
+  # ----- vcs_info -----
+  # Set vcs_info parameters.
+  zstyle ':vcs_info:*' check-for-changes true
+  zstyle ':vcs_info:*' formats "${_prompt_mseri_colors[1]}%b %f%c%u"
+  zstyle ':vcs_info:*' stagedstr '%F{green}+%f'
+  zstyle ':vcs_info:*' unstagedstr '%F{red}!%f'
+  zstyle ':vcs_info:git*+set-message:*' hooks git-clean
+  # ----- end -----
+
+  # ----- git info -----
+  # Set git-info parameters.
+  zstyle ':prezto:module:git:info' verbose 'yes'
+  #zstyle ':prezto:module:git:info:branch' format "${_prompt_mseri_colors[1]}%b%f "
+  #zstyle ':prezto:module:git:info:commit' format "%F{white}%.7c%f"
+  #zstyle ':prezto:module:git:info:dirty' format "%F{red}!%f"
+  #zstyle ':prezto:module:git:info:clean' format "%F{green}●%f"
+  zstyle ':prezto:module:git:info:ahead' format "%%B%F{yellow}⬆ %f%%b"
+  zstyle ':prezto:module:git:info:behind' format "%%B%F{yellow}⬇ %f%%b"
+  zstyle ':prezto:module:git:info:stashed' format "%%B${_prompt_mseri_colors[8]}✭ %f%%b"
+  zstyle ':prezto:module:git:info:untracked' format "%%B%F{white}?%f%%b"
+
+  zstyle ':prezto:module:git:info:keys' format \
+        'remotesync' '%A%B' \
+        'rprompt' '%u%S%a'
+        #'rprompt' '(%b%c%A%B %D%C%S%d%a%m%u)'
+  # ----- end -----
+
+  PROMPT='
+[\
+${_prompt_mseri_colors[2]}%n%f\
+@\
+${_prompt_mseri_colors[6]}%m%f]\
+${_prompt_mseri_colors[5]}${_prompt_whlin_pwd}%f
+» '
+  RPROMPT='${git_info[remotesync]}${vcs_info_msg_0_}${git_info[rprompt]}'
+}
+
+prompt_whlin_setup "$@"
