@@ -65,7 +65,6 @@ function +vi-git-clean {
 }
 
 function prompt_whlin_precmd {
-  _prompt_whlin_pwd="${PWD/#$HOME/~}"
   git-info
   vcs_info
 }
@@ -85,14 +84,14 @@ function prompt_whlin_setup {
   # Use extended color pallete if available.
   if [[ $TERM = *256color* || $TERM = *rxvt* ]]; then
     _prompt_mseri_colors=(
-      "%F{81}"  # Turquoise
       "%F{75}"  # Pastel Cyan
-      "%F{215}" # Light Orange
-      "%F{166}" # Orange - not used
+      "%F{81}"  # Turquoise
+      "%F{118}" # Limegreen
       "%F{119}" # Pastel Limegreen
       "%F{135}" # Purple
       "%F{161}" # Hotpink
-      "%F{118}" # Limegreen
+      "%F{166}" # Orange - not used
+      "%F{215}" # Light Orange
     )
   else
     _prompt_mseri_colors=(
@@ -111,7 +110,7 @@ function prompt_whlin_setup {
   # ----- vcs_info -----
   # Set vcs_info parameters.
   zstyle ':vcs_info:*' check-for-changes true
-  zstyle ':vcs_info:*' formats "${_prompt_mseri_colors[1]}%b %f%c%u"
+  zstyle ':vcs_info:*' formats "${_prompt_mseri_colors[2]}%b %f%c%u" # 81
   zstyle ':vcs_info:*' stagedstr '%F{green}+%f'
   zstyle ':vcs_info:*' unstagedstr '%F{red}!%f'
   zstyle ':vcs_info:git*+set-message:*' hooks git-clean
@@ -120,13 +119,13 @@ function prompt_whlin_setup {
   # ----- git info -----
   # Set git-info parameters.
   zstyle ':prezto:module:git:info' verbose 'yes'
-  #zstyle ':prezto:module:git:info:branch' format "${_prompt_mseri_colors[1]}%b%f "
+  #zstyle ':prezto:module:git:info:branch' format "${_prompt_mseri_colors[2]}%b%f " # 81
   #zstyle ':prezto:module:git:info:commit' format "%F{white}%.7c%f"
   #zstyle ':prezto:module:git:info:dirty' format "%F{red}!%f"
   #zstyle ':prezto:module:git:info:clean' format "%F{green}●%f"
   zstyle ':prezto:module:git:info:ahead' format "%%B%F{yellow}⬆ %f%%b"
   zstyle ':prezto:module:git:info:behind' format "%%B%F{yellow}⬇ %f%%b"
-  zstyle ':prezto:module:git:info:stashed' format "%%B${_prompt_mseri_colors[8]}✭ %f%%b"
+  zstyle ':prezto:module:git:info:stashed' format "%%B${_prompt_mseri_colors[3]}✭ %f%%b" # 118
   zstyle ':prezto:module:git:info:untracked' format "%%B%F{white}?%f%%b"
 
   zstyle ':prezto:module:git:info:keys' format \
@@ -134,13 +133,11 @@ function prompt_whlin_setup {
         'rprompt' '%u%S%a'
         #'rprompt' '(%b%c%A%B %D%C%S%d%a%m%u)'
   # ----- end -----
-
+  user_name=${_prompt_mseri_colors[1]}%n%f # 75
+  host_name=${_prompt_mseri_colors[5]}%m%f # 135
+  current_path=${_prompt_mseri_colors[4]}"${PWD/#$HOME/~}"%f # 119
   PROMPT='
-[\
-${_prompt_mseri_colors[2]}%n%f\
-@\
-${_prompt_mseri_colors[6]}%m%f]\
-${_prompt_mseri_colors[5]}${_prompt_whlin_pwd}%f
+[$user_name@$host_name] $current_path
 » '
   RPROMPT='${git_info[remotesync]}${vcs_info_msg_0_}${git_info[rprompt]}'
 }
