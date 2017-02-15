@@ -65,6 +65,7 @@ function +vi-git-clean {
 }
 
 function prompt_whlin_precmd {
+  _prompt_whlin_pwd="${PWD/#$HOME/~}"
   git-info
   vcs_info
 }
@@ -92,6 +93,11 @@ function prompt_whlin_setup {
       "%F{161}" # Hotpink
       "%F{166}" # Orange - not used
       "%F{215}" # Light Orange
+      "%F{cyan}"
+      "%F{magenta}"
+      "%F{yellow}"
+      "%F{red}"
+      "%F{green}"
     )
   else
     _prompt_mseri_colors=(
@@ -133,11 +139,13 @@ function prompt_whlin_setup {
         'rprompt' '%u%S%a'
         #'rprompt' '(%b%c%A%B %D%C%S%d%a%m%u)'
   # ----- end -----
-  user_name=${_prompt_mseri_colors[1]}%n%f # 75
-  host_name=${_prompt_mseri_colors[5]}%m%f # 135
-  current_path=${_prompt_mseri_colors[4]}"${PWD/#$HOME/~}"%f # 119
+  colorNums=(1 5 4) # 75 135 119
+  user_name=${_prompt_mseri_colors[colorNums[1]]}%n%f
+  host_name=${_prompt_mseri_colors[colorNums[2]]}%m%f
+  current_path=${_prompt_mseri_colors[4]}"${PWD/#$HOME/~}"%f
   PROMPT='
-[$user_name@$host_name] $current_path
+<$user_name@$host_name> \
+${_prompt_mseri_colors[colorNums[3]]}${_prompt_whlin_pwd}%f
 » '
   RPROMPT='${git_info[remotesync]}${vcs_info_msg_0_}${git_info[rprompt]}'
 }
