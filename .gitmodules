@@ -8,4 +8,4 @@
     ignore = dirty
 [submodule "vim"]
 	path = vim
-	url = https://github.com/crazybrainL/vimfilers
+    url = https://gitlab.com/J.Byte/vimfilers.git
